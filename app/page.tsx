@@ -55,7 +55,7 @@ export default function Home() {
           <span className="brand-copy"><strong><span>USA</span> Job Market</strong><small>Find Jobs Across the United States</small></span>
         </a>
         <nav className="nav" aria-label="Main navigation">
-          <a className="active" href="/">Home</a><a href="#jobs">Jobs</a><a href="#companies">Companies</a><a href="#categories">Categories</a><a href="#states">States <span className="chevron">⌄</span></a><a href="#resources">Resources</a><a href="#blog">Blog</a>
+          <a className="active" href="/">Home</a><a href="/jobs">Jobs</a><a href="#companies">Companies</a><a href="#categories">Categories</a><a href="#states">States <span className="chevron">⌄</span></a><a href="#resources">Resources</a><a href="#blog">Blog</a>
         </nav>
         <div className="header-actions">
           <button className="icon-button heart" aria-label="Saved jobs">♡</button><button className="btn sign-in">Sign In</button><button className="btn register">Register</button>
@@ -103,7 +103,7 @@ export default function Home() {
 
       <section className="section latest" id="jobs">
         <div className="container">
-          <div className="section-heading"><div><h2>Latest USA Jobs</h2><p>Fresh opportunities from top companies across the United States.</p></div><a href="#jobs">View All Jobs <span>→</span></a></div>
+          <div className="section-heading"><div><h2>Latest USA Jobs</h2><p>Fresh opportunities from top companies across the United States.</p></div><a href="/jobs">View All Jobs <span>→</span></a></div>
           <div className="job-grid">
             {filtered.map(job=><article className="job-card" key={job.id}>
               <div className="job-card-head"><div className={"company-mark "+job.markClass}>{job.mark}</div><strong>{job.company}</strong><span className="job-type">{job.type}</span><button className="save-job" aria-label={"Save "+job.title}>♡</button></div>
