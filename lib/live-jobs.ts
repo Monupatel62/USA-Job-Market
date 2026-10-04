@@ -1,7 +1,28 @@
-import {sourceRegistry,normalizeText,isUsLocation,inferRemote,slugify} from "./sources";
+import {sourceRegistry,configuredLeverSources,normalizeText,isUsLocation,inferRemote,slugify} from "./sources";
 import type {Job} from "./job-types";
 
 export const revalidate=900;
+
+function inferType(value:string,title:string):Job["type"]{
+ const text=value+" "+title;
+ if(/intern|internship|co-op/i.test(text))return "Internship";
+ if(/part.?time/i.test(text))return "Part-time";
+ if(/contract|contractor/i.test(text))return "Contract";
+ if(/temporary|seasonal/i.test(text))return "Temporary";
+ return "Full-time";
+}
+
+function dedupeJobs(input:Job[]){
+ const sourceMap=new Map<string,Job>();
+ for(const job of input)sourceMap.set((job.source+"|"+job.sourceJobId).toLowerCase(),job);
+ const listingMap=new Map<string,Job>();
+ for(const job of sourceMap.values()){
+  const key=[job.company,job.title,job.location].map(normalizeText).join("|").toLowerCase();
+  const old=listingMap.get(key);
+  if(!old||new Date(job.fetchedAt).getTime()>new Date(old.fetchedAt).getTime())listingMap.set(key,job);
+ }
+ return [...listingMap.values()].map(job=>({...job,isActive:true,lastSeenAt:job.fetchedAt}));
+}
 
 async function greenhouseJobs():Promise<Job[]>{
  const results=await Promise.allSettled(sourceRegistry.filter(s=>s.provider==="greenhouse").map(async source=>{
@@ -10,7 +31,26 @@ async function greenhouseJobs():Promise<Job[]>{
   const data=await res.json() as {jobs?:any[]};
   return (data.jobs??[]).filter(item=>isUsLocation(normalizeText(item.location?.name))).map(item=>{
    const location=normalizeText(item.location?.name);
-   return {id:"greenhouse-"+source.token+"-"+item.id,slug:slugify(item.title+"-"+source.company+"-"+item.id),title:normalizeText(item.title),company:source.company,location,city:location.split(",")[0]??location,state:location.split(",")[1]?.trim()??"",category:"Other Jobs",type:"Full-time",remote:inferRemote(location,item.title),description:normalizeText(item.content),source:"greenhouse",sourceName:source.company,sourceUrl:item.absolute_url,sourceJobId:String(item.id),postedAt:item.updated_at,fetchedAt:new Date().toISOString()} as Job;
+   return {id:"greenhouse-"+source.token+"-"+item.id,slug:slugify(item.title+"-"+source.company+"-"+item.id),title:normalizeText(item.title),company:source.company,location,city:location.split(",")[0]??location,state:location.split(",")[1]?.trim()??"",category:"Other Jobs",type:inferType("",item.title),remote:inferRemote(location,item.title),description:normalizeText(item.content),source:"greenhouse",sourceName:source.company,sourceUrl:item.absolute_url,sourceJobId:String(item.id),postedAt:item.updated_at,fetchedAt:new Date().toISOString()} as Job;
+  });
+ }));
+ return results.flatMap(r=>r.status==="fulfilled"?r.value:[]);
+}
+
+async function leverJobs():Promise<Job[]>{
+ const results=await Promise.allSettled(configuredLeverSources().map(async source=>{
+  const res=await fetch("https://api.lever.co/v0/postings/"+encodeURIComponent(source.token)+"?mode=json",{headers:{Accept:"application/json"},next:{revalidate:900}});
+  if(!res.ok)throw new Error(source.company+" HTTP "+res.status);
+  const data=await res.json() as any[];
+  return (Array.isArray(data)?data:[]).filter(item=>{
+   const locations=[item.categories?.location,...(item.categories?.allLocations??[])].filter(Boolean).join(", ");
+   return item.country==="US"||isUsLocation(locations);
+  }).map(item=>{
+   const locations=[item.categories?.location,...(item.categories?.allLocations??[])].filter(Boolean);
+   const location=String(locations.find((value:string)=>isUsLocation(value))??locations[0]??"USA");
+   const parts=normalizeText(location).split(",");
+   const title=normalizeText(item.text);
+   return {id:"lever-"+source.token+"-"+item.id,slug:slugify(title+"-"+source.company+"-"+item.id),title,company:source.company,location,city:parts[0]??location,state:parts[1]?.trim()??"",category:"Other Jobs",type:inferType(normalizeText(item.categories?.commitment),title),remote:/remote/i.test(normalizeText(item.workplaceType))||inferRemote(location,title),salary:normalizeText(item.salaryDescriptionPlain),description:normalizeText(item.descriptionPlain||item.openingPlain),source:"lever",sourceName:source.company,sourceUrl:item.hostedUrl||item.applyUrl,sourceJobId:String(item.id),postedAt:item.createdAt?new Date(item.createdAt).toISOString():new Date().toISOString(),fetchedAt:new Date().toISOString()} as Job;
   });
  }));
  return results.flatMap(r=>r.status==="fulfilled"?r.value:[]);
@@ -31,9 +71,10 @@ async function usaJobs():Promise<Job[]>{
 }
 
 export async function fetchLiveJobs():Promise<Job[]>{
- const [greenhouse,government]=await Promise.allSettled([greenhouseJobs(),usaJobs()]);
- return [
+ const [greenhouse,lever,government]=await Promise.allSettled([greenhouseJobs(),leverJobs(),usaJobs()]);
+ return dedupeJobs([
   ...(greenhouse.status==="fulfilled"?greenhouse.value:[]),
+  ...(lever.status==="fulfilled"?lever.value:[]),
   ...(government.status==="fulfilled"?government.value:[])
- ].filter(job=>job.source==="usajobs"||isUsLocation(job.location));
+ ]).filter(job=>job.source==="usajobs"||isUsLocation(job.location));
 }
