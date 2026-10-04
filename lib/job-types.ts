@@ -1,0 +1,20 @@
+export type Job = {
+  id: string;
+  slug: string;
+  title: string;
+  company: string;
+  location: string;
+  city: string;
+  state: string;
+  category: string;
+  type: "Full-time" | "Part-time" | "Contract" | "Internship" | "Temporary";
+  remote: boolean;
+  salary?: string;
+  description: string;
+  source: "greenhouse" | "lever" | "usajobs" | "employer";
+  sourceName: string;
+  sourceUrl: string;
+  sourceJobId: string;
+  postedAt: string;
+  fetchedAt: string;
+};
