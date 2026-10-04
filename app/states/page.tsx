@@ -1,0 +1,4 @@
+import Link from "next/link";
+import {usaStates} from "../../lib/states";
+export const metadata={title:"Jobs by State | USA Job Market",description:"Browse USA jobs by state, including remote opportunities."};
+export default function StatesPage(){return <main className="directory-page"><div className="container"><span className="eyebrow">50 states</span><h1>Jobs by State</h1><p className="directory-intro">Find opportunities across every US state.</p><div className="directory-grid">{usaStates.map(([slug,name,code])=><Link key={slug} href={"/states/"+slug}><span>{name}</span><small>{code}</small></Link>)}</div></div></main>}
