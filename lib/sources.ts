@@ -8,7 +8,12 @@ export type JobSourceConfig = {
 export const sourceRegistry: JobSourceConfig[] = [
   { provider: "greenhouse", token: "anthropic", company: "Anthropic", country: "US" },
   { provider: "greenhouse", token: "coinbase", company: "Coinbase", country: "US" },
-  { provider: "greenhouse", token: "figma", company: "Figma", country: "US" }
+  { provider: "greenhouse", token: "figma", company: "Figma", country: "US" },
+  { provider: "greenhouse", token: "cloudflare", company: "Cloudflare", country: "US" },
+  { provider: "greenhouse", token: "guidepointsecurity", company: "GuidePoint Security", country: "US" },
+  { provider: "greenhouse", token: "nourish", company: "Nourish", country: "US" },
+  { provider: "greenhouse", token: "gather", company: "Gather", country: "US" },
+  { provider: "greenhouse", token: "harmonic", company: "Harmonic", country: "US" }
 ];
 
 export function configuredLeverSources(): JobSourceConfig[] {
