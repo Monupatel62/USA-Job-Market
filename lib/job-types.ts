@@ -17,4 +17,6 @@ export type Job = {
   sourceJobId: string;
   postedAt: string;
   fetchedAt: string;
+  lastSeenAt?: string;
+  isActive?: boolean;
 };
