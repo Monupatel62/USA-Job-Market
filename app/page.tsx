@@ -95,10 +95,10 @@ export default function Home() {
       </section>
 
       <section className="container stat-grid" aria-label="USA Job Market coverage">
-        <div className="stat-card"><span className="stat-icon">▣</span><div><strong>1,50,000+</strong><small>USA Jobs Listed</small></div></div>
-        <div className="stat-card"><span className="stat-icon">▥</span><div><strong>10,000+</strong><small>Top Companies</small></div></div>
-        <div className="stat-card"><span className="stat-icon">●</span><div><strong>50 States</strong><small>Across the USA</small></div></div>
-        <div className="stat-card"><span className="stat-icon">♟</span><div><strong>All Categories</strong><small>From Entry to Executive</small></div></div>
+        <div className="stat-card"><span className="stat-icon">▣</span><div><strong>Live Sources</strong><small>Employer job feeds</small></div></div>
+        <div className="stat-card"><span className="stat-icon">▥</span><div><strong>50 States</strong><small>USA-wide coverage</small></div></div>
+        <div className="stat-card"><span className="stat-icon">●</span><div><strong>All Categories</strong><small>Every major career field</small></div></div>
+        <div className="stat-card"><span className="stat-icon">♟</span><div><strong>Fresh Checks</strong><small>Sources refreshed regularly</small></div></div>
       </section>
 
       <section className="section latest" id="jobs">
