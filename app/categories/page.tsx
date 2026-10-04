@@ -1,0 +1,4 @@
+import Link from "next/link";
+import {categories} from "../../lib/categories";
+export const metadata={title:"USA Job Categories | USA Job Market",description:"Browse USA jobs across every major career category."};
+export default function CategoriesPage(){return <main className="directory-page"><div className="container"><span className="eyebrow">Career directory</span><h1>USA Job Categories</h1><p className="directory-intro">Explore jobs across technology, healthcare, finance, engineering, retail, government and more.</p><div className="directory-grid">{categories.map(c=><Link key={c} href={"/jobs?category="+encodeURIComponent(c)}>{c}<span>→</span></Link>)}</div></div></main>}
