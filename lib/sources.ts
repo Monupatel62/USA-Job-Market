@@ -22,7 +22,8 @@ export const sourceRegistry: JobSourceConfig[] = [
 ];
 
 export function configuredLeverSources(): JobSourceConfig[] {
-  return sourceRegistry.filter(source => source.provider === "lever").concat((process.env.LEVER_SITES ?? "")
+  const configured = sourceRegistry.filter(source => source.provider === "lever");
+  const fromEnv = (process.env.LEVER_SITES ?? "")
     .split(",")
     .map(value => value.trim())
     .filter(Boolean)
@@ -34,7 +35,14 @@ export function configuredLeverSources(): JobSourceConfig[] {
         company: (nameParts.join(":").trim() || token.trim()),
         country: "US" as const
       };
-    })) as JobSourceConfig[];
+    });
+  const seen = new Set<string>();
+  return [...configured, ...fromEnv].filter(source => {
+    const key = source.token.trim().toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 export function normalizeText(value: unknown) {
