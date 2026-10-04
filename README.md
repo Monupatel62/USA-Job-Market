@@ -37,3 +37,12 @@ The production job feed should prioritize official employer career pages, public
 6. Employer job posting
 7. SEO content and career tools
 8. Analytics, monetization and production hardening
+
+
+## Job data architecture
+
+- /jobs uses live employer data when configured and falls back to clearly marked preview listings.
+- Public Greenhouse Job Board GET endpoints are used for configured employers; authentication is not required for those public GET endpoints.
+- An optional USAJOBS adapter supports federal listings when USAJOBS_API_KEY and USAJOBS_USER_AGENT are configured.
+- Every normalized listing keeps its source URL, source job ID and fetch timestamp so candidates can verify and apply at the original source.
+- The platform is USA-only: non-US locations are filtered before display.
