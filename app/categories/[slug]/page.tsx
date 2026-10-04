@@ -1,0 +1,25 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { categories } from "../../../lib/categories";
+import { filterJobs, jobs } from "../../../lib/job-data";
+import { fetchLiveJobs } from "../../../lib/live-jobs";
+import { slugify } from "../../../lib/sources";
+
+export function generateStaticParams(){return categories.map(category=>({slug:slugify(category)}));}
+
+export async function generateMetadata({params}:{params:Promise<{slug:string}>}){
+ const {slug}=await params;
+ const category=categories.find(item=>slugify(item)===slug);
+ return category?{title:category+" Jobs in the USA | USA Job Market",description:"Find "+category+" jobs across the United States. Browse current openings, locations and work types."}:{title:"Category Jobs"};
+}
+
+export default async function CategoryPage({params}:{params:Promise<{slug:string}>}){
+ const {slug}=await params;
+ const category=categories.find(item=>slugify(item)===slug);
+ if(!category)notFound();
+ const live=await fetchLiveJobs();
+ const liveResult=filterJobs({category},live);
+ const preview=filterJobs({category},jobs);
+ const result=liveResult.length?liveResult:preview;
+ return <main className="directory-page"><div className="container"><Link className="back-link" href="/categories">← All categories</Link><span className="eyebrow">USA jobs by category</span><h1>{category} Jobs</h1><p className="directory-intro">{liveResult.length?"Live employer listings from configured sources.":"Preview listings are shown until live sources return matching jobs."}</p><div className="state-job-list">{result.map(job=><Link className="state-job-card" href={"/jobs/"+job.slug} key={job.id}><strong>{job.title}</strong><span>{job.company} • {job.location}</span><small>{job.type}{job.remote?" • Remote":""}{job.source!=="employer"?" • Live source":" • Preview"}</small></Link>)}{!result.length&&<div className="empty">No current listings found for this category.</div>}</div></div></main>;
+}
