@@ -63,6 +63,9 @@ export function inferRemote(location: string, title = "") {
 }
 
 export function isUsLocation(location: string) {
-  return /united states|usa|remote/i.test(location) ||
-    /(^|,|\s)(AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|DC)(\s|,|$)/i.test(location);
+  const value = normalizeText(location);
+  const hasUsMarker = /united states|\busa\b|\bu\.s\.a?\.?\b/i.test(value);
+  const hasState = /(^|,|\s)(AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|DC)(\s|,|$)/i.test(value);
+  const remoteOnly = /^(remote|remote only|work from home|wfh)$/i.test(value);
+  return hasUsMarker || hasState || (!remoteOnly && /remote/i.test(value) && hasUsMarker);
 }
