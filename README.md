@@ -46,3 +46,12 @@ The production job feed should prioritize official employer career pages, public
 - An optional USAJOBS adapter supports federal listings when USAJOBS_API_KEY and USAJOBS_USER_AGENT are configured.
 - Every normalized listing keeps its source URL, source job ID and fetch timestamp so candidates can verify and apply at the original source.
 - The platform is USA-only: non-US locations are filtered before display.
+
+
+### Live-source expansion
+- Greenhouse public Job Board feeds are configured for verified public boards.
+- Lever public postings can be enabled with `LEVER_SITES=site:Company Name,site2:Company Two`.
+- Listings are normalized to one schema, filtered to USA locations, deduplicated by source ID and company/title/location, and marked active only when seen in the current source response.
+- Because live listings are read from the current source response, removed/closed postings naturally disappear instead of remaining as stale active jobs.
+- Preview listings remain clearly labeled and are only used when live sources return no matching data.
+
