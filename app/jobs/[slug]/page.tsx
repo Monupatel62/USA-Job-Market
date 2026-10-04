@@ -1,0 +1,8 @@
+import {notFound} from "next/navigation";
+import Link from "next/link";
+import {jobs,getJobBySlug} from "../../../lib/job-data";
+export function generateStaticParams(){return jobs.map(job=>({slug:job.slug}));}
+export default async function JobDetailPage({params}:{params:Promise<{slug:string}>}){
+ const {slug}=await params; const job=getJobBySlug(slug); if(!job)notFound();
+ return <main className="job-detail-page"><div className="container"><Link className="back-link" href="/jobs">← Back to USA jobs</Link><article className="detail-card"><header className="detail-head"><div className="result-logo large">{job.company.slice(0,1)}</div><div><span className="eyebrow">{job.category}</span><h1>{job.title}</h1><p>{job.company} • {job.location}</p></div><span className="job-type">{job.type}</span></header><div className="detail-grid"><section><h2>Job overview</h2><p>{job.description}</p><div className="detail-meta"><span>Location: {job.location}</span><span>Category: {job.category}</span><span>Work type: {job.type}</span><span>Remote: {job.remote?"Yes":"No"}</span></div><h2>Apply for this job</h2><p className="notice">USA Job Market does not submit applications. Verify the live opening on the employer's official career page before applying.</p><a className="btn register apply-button" href={job.sourceUrl} target="_blank" rel="noreferrer">Apply on {job.sourceName} ↗</a></section><aside className="detail-side"><strong>Listing source</strong><span>{job.sourceName}</span><strong>Posted</strong><span>{new Date(job.postedAt).toLocaleDateString("en-US")}</span><strong>Last checked</strong><span>{new Date(job.fetchedAt).toLocaleDateString("en-US")}</span></aside></div></article></div></main>;
+}
