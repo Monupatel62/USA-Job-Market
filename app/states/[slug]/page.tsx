@@ -1,0 +1,7 @@
+import Link from "next/link";
+import {notFound} from "next/navigation";
+import {usaStates} from "../../../lib/states";
+import {filterJobs,jobs} from "../../../lib/job-data";
+export function generateStaticParams(){return usaStates.map(([slug])=>({slug}));}
+export async function generateMetadata({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const s=usaStates.find(x=>x[0]===slug);return s?{title:"Jobs in "+s[1]+" | USA Job Market",description:"Find jobs in "+s[1]+" across all categories and work types."}:{title:"State Jobs"};}
+export default async function StatePage({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const s=usaStates.find(x=>x[0]===slug);if(!s)notFound();const result=filterJobs({location:s[2]},jobs);return <main className="directory-page"><div className="container"><Link className="back-link" href="/states">← All states</Link><span className="eyebrow">USA jobs by state</span><h1>Jobs in {s[1]}</h1><p className="directory-intro">Browse {result.length} current preview listings in {s[1]}. Live employer sources are being expanded.</p><div className="state-job-list">{result.map(job=><Link className="state-job-card" href={"/jobs/"+job.slug} key={job.id}><strong>{job.title}</strong><span>{job.company} • {job.location}</span><small>{job.category} • {job.type}</small></Link>)}{!result.length&&<div className="empty">No preview listings for this state yet. Check the main USA jobs search for live sources.</div>}</div></div></main>;}
