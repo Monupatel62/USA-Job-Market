@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { categories as allCategories } from "../lib/categories";
 
 type Job = {
   id: string; title: string; company: string; location: string; state: string;
@@ -16,10 +17,7 @@ const jobs: Job[] = [
   { id:"6", title:"Project Manager", company:"CivicWorks", location:"Washington, DC", state:"District of Columbia", category:"Management", type:"Full-time", salary:"$95K–$132K", posted:"2 days ago", remote:true },
 ];
 
-const categories = [
-  ["IT & Software","12,400+"],["Healthcare & Medical","9,800+"],["Engineering","6,200+"],["Sales","5,900+"],
-  ["Finance & Accounting","4,700+"],["Education & Teaching","3,900+"],["Construction","3,400+"],["Customer Service","3,100+"]
-];
+const categories = allCategories.map((name) => [name, "Browse jobs"] as const);
 
 export default function Home() {
   const [query,setQuery] = useState("");
