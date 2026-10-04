@@ -13,11 +13,16 @@ export const sourceRegistry: JobSourceConfig[] = [
   { provider: "greenhouse", token: "guidepointsecurity", company: "GuidePoint Security", country: "US" },
   { provider: "greenhouse", token: "nourish", company: "Nourish", country: "US" },
   { provider: "greenhouse", token: "gather", company: "Gather", country: "US" },
-  { provider: "greenhouse", token: "harmonic", company: "Harmonic", country: "US" }
+  { provider: "greenhouse", token: "harmonic", company: "Harmonic", country: "US" },
+  { provider: "lever", token: "peerspace", company: "Peerspace", country: "US" },
+  { provider: "lever", token: "dnb", company: "Dun & Bradstreet", country: "US" },
+  { provider: "lever", token: "weloglobal", company: "Welo Global", country: "US" },
+  { provider: "lever", token: "elementsolutions", company: "Element Solutions", country: "US" },
+  { provider: "lever", token: "palantir", company: "Palantir Technologies", country: "US" }
 ];
 
 export function configuredLeverSources(): JobSourceConfig[] {
-  return (process.env.LEVER_SITES ?? "")
+  return sourceRegistry.filter(source => source.provider === "lever").concat((process.env.LEVER_SITES ?? "")
     .split(",")
     .map(value => value.trim())
     .filter(Boolean)
@@ -29,7 +34,7 @@ export function configuredLeverSources(): JobSourceConfig[] {
         company: (nameParts.join(":").trim() || token.trim()),
         country: "US" as const
       };
-    });
+    })) as JobSourceConfig[];
 }
 
 export function normalizeText(value: unknown) {
