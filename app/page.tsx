@@ -4,77 +4,140 @@ import { useMemo, useState } from "react";
 import { categories as allCategories } from "../lib/categories";
 
 type Job = {
-  id: string; title: string; company: string; location: string; state: string;
-  category: string; type: string; salary: string; posted: string; remote: boolean;
+  id: string; title: string; company: string; location: string; category: string;
+  type: string; salary: string; posted: string; remote?: boolean; mark: string; markClass: string;
 };
 
 const jobs: Job[] = [
-  { id:"1", title:"Software Engineer", company:"Northstar Technologies", location:"Austin, TX", state:"Texas", category:"IT & Software", type:"Full-time", salary:"$110K–$145K", posted:"Today", remote:false },
-  { id:"2", title:"Registered Nurse", company:"Lakeside Health", location:"Chicago, IL", state:"Illinois", category:"Healthcare & Medical", type:"Full-time", salary:"$78K–$104K", posted:"Today", remote:false },
-  { id:"3", title:"Customer Service Representative", company:"Summit Retail Group", location:"Remote, USA", state:"Remote", category:"Customer Service", type:"Full-time", salary:"$42K–$58K", posted:"1 day ago", remote:true },
-  { id:"4", title:"Data Analyst", company:"Brightline Finance", location:"New York, NY", state:"New York", category:"Data Science & Analytics", type:"Full-time", salary:"$82K–$118K", posted:"1 day ago", remote:false },
-  { id:"5", title:"Warehouse Associate", company:"United Distribution", location:"Columbus, OH", state:"Ohio", category:"Warehouse & Supply Chain", type:"Part-time", salary:"$19–$24/hr", posted:"2 days ago", remote:false },
-  { id:"6", title:"Project Manager", company:"CivicWorks", location:"Washington, DC", state:"District of Columbia", category:"Management", type:"Full-time", salary:"$95K–$132K", posted:"2 days ago", remote:true },
+  { id:"1", title:"Software Engineer", company:"Google", location:"Mountain View, CA", category:"IT & Software", type:"Full-time", salary:"$120K – $200K", posted:"2 days ago", mark:"G", markClass:"google" },
+  { id:"2", title:"Data Analyst", company:"Amazon", location:"Remote, USA", category:"Data Science & Analytics", type:"Remote", salary:"$80K – $130K", posted:"1 day ago", remote:true, mark:"a", markClass:"amazon" },
+  { id:"3", title:"Product Manager", company:"Microsoft", location:"Redmond, WA", category:"Management", type:"Full-time", salary:"$150K – $220K", posted:"3 days ago", mark:"▦", markClass:"microsoft" },
+  { id:"4", title:"Registered Nurse", company:"UnitedHealth Group", location:"Houston, TX", category:"Healthcare & Medical", type:"Full-time", salary:"$70K – $110K", posted:"2 days ago", mark:"U", markClass:"uhg" },
+  { id:"5", title:"Mechanical Engineer", company:"Tesla", location:"Austin, TX", category:"Engineering", type:"Full-time", salary:"$110K – $170K", posted:"1 day ago", mark:"T", markClass:"tesla" },
+  { id:"6", title:"Barista", company:"Starbucks", location:"New York, NY", category:"Restaurant & Food Service", type:"Part-time", salary:"$16 – $22/hour", posted:"3 days ago", mark:"★", markClass:"starbucks" },
 ];
 
-const categories = allCategories.map((name) => [name, "Browse jobs"] as const);
+const categoryVisuals: Record<string, [string,string]> = {
+  "IT & Software":["▰","blue"], "Healthcare & Medical":["♥","red"], "Finance & Accounting":["▥","gold"],
+  Engineering:["⚙","blue"], "Education & Teaching":["◆","blue"], Construction:["⌂","gold"],
+  "Customer Service":["◉","purple"], Sales:["▥","red"], "Remote Jobs":["⌂","green"],
+  "Government & Public Sector":["▥","slate"], "Hospitality & Hotels":["☕","gold"],
+};
+const featuredCategories = ["IT & Software","Healthcare & Medical","Finance & Accounting","Engineering","Education & Teaching","Construction","Customer Service","Sales","Remote Jobs","Government & Public Sector","Hospitality & Hotels"];
+const trends = ["Remote Jobs","Software Engineer","Nurse","Teacher","Data Analyst","Part-Time","Internship"];
 
 export default function Home() {
   const [query,setQuery] = useState("");
   const [location,setLocation] = useState("");
   const [category,setCategory] = useState("All categories");
   const [type,setType] = useState("All types");
+  const [menuOpen,setMenuOpen] = useState(false);
 
-  const filtered = useMemo(() => jobs.filter(j => {
+  const filtered = useMemo(() => jobs.filter(job => {
     const q = query.toLowerCase().trim();
-    const matchesQ = !q || [j.title,j.company,j.category,j.location].join(" ").toLowerCase().includes(q);
-    const matchesLocation = !location || j.location.toLowerCase().includes(location.toLowerCase()) || j.state.toLowerCase().includes(location.toLowerCase());
-    const matchesCategory = category === "All categories" || j.category === category;
-    const matchesType = type === "All types" || j.type === type;
-    return matchesQ && matchesLocation && matchesCategory && matchesType;
-  }),[query,location,category,type]);
+    const matchesQuery = !q || [job.title,job.company,job.category,job.location].join(" ").toLowerCase().includes(q);
+    const matchesLocation = !location || job.location.toLowerCase().includes(location.toLowerCase());
+    const matchesCategory = category === "All categories" || job.category === category;
+    const matchesType = type === "All types" || job.type === type;
+    return matchesQuery && matchesLocation && matchesCategory && matchesType;
+  }), [query,location,category,type]);
+
+  const selectCategory = (value:string) => {
+    setCategory(value);
+    document.getElementById("jobs")?.scrollIntoView({behavior:"smooth"});
+  };
 
   return <>
-    <div className="topbar"><div className="container topbar-inner"><span>🇺🇸 Jobs across all 50 states + Washington, DC</span><span>USA Job Market</span></div></div>
-    <header className="header"><div className="container header-inner">
-      <a className="brand" href="/"><span className="brand-mark">US</span><span>USA Job Market</span></a>
-      <nav className="nav"><a href="#jobs">Jobs</a><a href="#categories">Categories</a><a href="#states">States</a><a href="#resources">Career Resources</a></nav>
-      <div className="header-actions"><button className="btn">Post a Job</button><button className="btn btn-primary">Sign In</button><button className="btn mobile-menu" aria-label="Menu">☰</button></div>
-    </div></header>
+    <header className="site-header">
+      <div className="container header-inner">
+        <a className="brand" href="/">
+          <span className="flag-mark" aria-hidden="true"><i/><b/><em/></span>
+          <span className="brand-copy"><strong><span>USA</span> Job Market</strong><small>Find Jobs Across the United States</small></span>
+        </a>
+        <nav className="nav" aria-label="Main navigation">
+          <a className="active" href="/">Home</a><a href="#jobs">Jobs</a><a href="#companies">Companies</a><a href="#categories">Categories</a><a href="#states">States <span className="chevron">⌄</span></a><a href="#resources">Resources</a><a href="#blog">Blog</a>
+        </nav>
+        <div className="header-actions">
+          <button className="icon-button heart" aria-label="Saved jobs">♡</button><button className="btn sign-in">Sign In</button><button className="btn register">Register</button>
+          <button className="mobile-menu" onClick={()=>setMenuOpen(v=>!v)} aria-label="Open menu" aria-expanded={menuOpen}>☰</button>
+        </div>
+      </div>
+      {menuOpen && <div className="mobile-nav">
+        {["Home","Jobs","Companies","Categories","States","Resources","Blog"].map(item => <a key={item} href={item==="Home" ? "/" : "#"+item.toLowerCase()} onClick={()=>setMenuOpen(false)}>{item}</a>)}
+        <div className="mobile-nav-actions"><button className="btn sign-in">Sign In</button><button className="btn register">Register</button></div>
+      </div>}
+    </header>
 
     <main>
-      <section className="hero"><div className="container">
-        <div className="hero-copy">
-          <div className="eyebrow">USA job search</div>
-          <h1>Find your next job in the United States.</h1>
-          <p>Search jobs by title, company, location, category, work type and more. One focused place for opportunities across the USA.</p>
-          <div className="search-box">
-            <div className="search-field"><span>⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Job title, keyword or company" aria-label="Job title, keyword or company"/></div>
-            <div className="search-field"><span>⌖</span><input value={location} onChange={e=>setLocation(e.target.value)} placeholder="City, state or remote" aria-label="Location"/></div>
-            <div className="search-field"><span>▦</span><select value={category} onChange={e=>setCategory(e.target.value)} aria-label="Category"><option>All categories</option>{categories.map(c=><option key={c[0]}>{c[0]}</option>)}</select></div>
-            <button className="search-button" onClick={()=>document.getElementById("jobs")?.scrollIntoView({behavior:"smooth"})}>Search Jobs</button>
-          </div>
+      <section className="hero">
+        <div className="hero-skyline" aria-hidden="true"><div className="liberty"><span/></div><div className="building b1"/><div className="building b2"/><div className="building b3"/><div className="building b4"/><div className="building b5"/></div>
+        <div className="container hero-content">
+          <h1>Find Your Dream Job <span>in the USA</span></h1>
+          <h2>All Categories. All States. Real Opportunities.</h2>
+          <p>Explore 1000+ USA jobs from top companies. Full-time, part-time, remote, contract, internships and more.</p>
+          <form className="hero-search" onSubmit={e=>{e.preventDefault();document.getElementById("jobs")?.scrollIntoView({behavior:"smooth"});}}>
+            <label className="search-input"><span>⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Job title, keyword or company" aria-label="Job title, keyword or company"/></label>
+            <label className="search-input"><span>⌖</span><input value={location} onChange={e=>setLocation(e.target.value)} placeholder="City, State or Remote" aria-label="City, State or Remote"/></label>
+            <button className="search-submit" type="submit">Search Jobs</button>
+          </form>
+          <div className="trending"><strong>Trending:</strong>{trends.map(item=><button key={item} onClick={()=>setQuery(item)}>{item}</button>)}</div>
         </div>
-        <div className="stats"><div className="stat"><strong>50 States</strong><span>USA coverage</span></div><div className="stat"><strong>All Careers</strong><span>Every major category</span></div><div className="stat"><strong>Remote</strong><span>Remote opportunities</span></div><div className="stat"><strong>Updated</strong><span>Fresh listings planned</span></div></div>
-      </div></section>
+      </section>
 
-      <section className="section" id="jobs"><div className="container">
-        <div className="section-head"><div><h2>Latest jobs</h2><div className="muted">{filtered.length} jobs matching your filters</div></div><select className="btn" value={type} onChange={e=>setType(e.target.value)} aria-label="Job type"><option>All types</option><option>Full-time</option><option>Part-time</option><option>Contract</option><option>Internship</option></select></div>
-        <div className="layout">
-          <aside className="filters"><div className="filter-title">Filter jobs</div><div className="filter-group"><label>Category</label><select value={category} onChange={e=>setCategory(e.target.value)}><option>All categories</option>{categories.map(c=><option key={c[0]}>{c[0]}</option>)}</select></div><div className="filter-group"><label>Work type</label><select value={type} onChange={e=>setType(e.target.value)}><option>All types</option><option>Full-time</option><option>Part-time</option><option>Contract</option><option>Internship</option></select></div><div className="filter-group"><label>Location</label><input className="search-field" style={{width:"100%"}} value={location} onChange={e=>setLocation(e.target.value)} placeholder="e.g. California" /></div></aside>
-          <div className="jobs">
-            {filtered.length ? filtered.map(job=><article className="job-card" key={job.id}>
-              <div className="job-top"><div className="job-main"><div className="company-logo">{job.company.slice(0,2).toUpperCase()}</div><div><h3 className="job-title">{job.title}</h3><div className="company">{job.company}</div></div></div><div className="salary">{job.salary}</div></div>
-              <div className="job-meta"><span>⌖ {job.location}</span><span>◷ {job.type}</span><span>• {job.posted}</span>{job.remote && <span className="badge">Remote</span>}<span className="badge">{job.category}</span></div>
-              <div className="job-footer"><span className="muted">Official application link will be shown here</span><a className="btn btn-primary" href="#apply">View Job</a></div>
-            </article>) : <div className="empty">No jobs match these filters. Try another keyword, location or category.</div>}
-          </div>
+      <section className="category-strip" id="categories">
+        <div className="container category-strip-inner">
+          {featuredCategories.map(name=>{
+            const [icon,tone]=categoryVisuals[name]??["●","blue"];
+            return <button key={name} className="category-tile" onClick={()=>selectCategory(name)}><span className={"category-icon "+tone}>{icon}</span><span>{name}</span></button>;
+          })}
+          <button className="category-tile" onClick={()=>document.getElementById("categories-all")?.scrollIntoView({behavior:"smooth"})}><span className="category-icon purple">⊞</span><span>More<br/>Categories</span></button>
         </div>
-      </div></section>
+      </section>
 
-      <section className="section" id="categories"><div className="container"><div className="section-head"><div><h2>Browse by category</h2><div className="muted">Jobs across the US economy</div></div></div><div className="categories">{categories.map(c=><a className="category" href={"#jobs"} key={c[0]} onClick={()=>setCategory(c[0])}>{c[0]}<small>{c[1]} jobs</small></a>)}</div></div></section>
+      <section className="container stat-grid" aria-label="USA Job Market coverage">
+        <div className="stat-card"><span className="stat-icon">▣</span><div><strong>1,50,000+</strong><small>USA Jobs Listed</small></div></div>
+        <div className="stat-card"><span className="stat-icon">▥</span><div><strong>10,000+</strong><small>Top Companies</small></div></div>
+        <div className="stat-card"><span className="stat-icon">●</span><div><strong>50 States</strong><small>Across the USA</small></div></div>
+        <div className="stat-card"><span className="stat-icon">♟</span><div><strong>All Categories</strong><small>From Entry to Executive</small></div></div>
+      </section>
+
+      <section className="section latest" id="jobs">
+        <div className="container">
+          <div className="section-heading"><div><h2>Latest USA Jobs</h2><p>Fresh opportunities from top companies across the United States.</p></div><a href="#jobs">View All Jobs <span>→</span></a></div>
+          <div className="job-grid">
+            {filtered.map(job=><article className="job-card" key={job.id}>
+              <div className="job-card-head"><div className={"company-mark "+job.markClass}>{job.mark}</div><strong>{job.company}</strong><span className="job-type">{job.type}</span><button className="save-job" aria-label={"Save "+job.title}>♡</button></div>
+              <h3>{job.title}</h3><p className="company-name">{job.company}</p><p className="job-location">⌖ {job.location}</p>
+              <div className="job-card-bottom"><strong>{job.salary}</strong><small>{job.posted}</small></div>
+            </article>)}
+          </div>
+          {!filtered.length && <div className="empty">No preview jobs match your search. Try another keyword or location.</div>}
+        </div>
+      </section>
+
+      <section className="section browse-all" id="categories-all">
+        <div className="container"><div className="section-heading"><div><h2>Explore Every Job Category</h2><p>From entry-level opportunities to executive careers across the US.</p></div></div>
+          <div className="all-category-grid">{allCategories.map(name=><button key={name} onClick={()=>selectCategory(name)}>{name}<span>→</span></button>)}</div>
+        </div>
+      </section>
+
+      <section className="section companies-preview" id="companies">
+        <div className="container"><div className="section-heading"><div><h2>Top Companies</h2><p>Discover employers and their latest USA opportunities.</p></div><a href="#companies">View All Companies →</a></div>
+          <div className="company-grid">{["Google","Amazon","Microsoft","UnitedHealth Group","Tesla","Starbucks"].map((name,i)=><div className="company-card" key={name}><span className={"company-mini mini-"+i}>{name[0]}</span><div><strong>{name}</strong><small>USA opportunities</small></div><span>→</span></div>)}</div>
+        </div>
+      </section>
+
+      <section className="seo-band" id="states"><div className="container"><div><span className="eyebrow">USA-wide coverage</span><h2>Find jobs in every state.</h2><p>Search by state, city, remote work, category, company and career level.</p></div><a className="btn register" href="#jobs">Explore USA Jobs →</a></div></section>
     </main>
 
-    <footer className="footer" id="resources"><div className="container footer-grid"><div><h3>USA Job Market</h3><p className="muted">A USA-focused job discovery platform built for job seekers.</p></div><div><h3>Jobs</h3><a href="#jobs">Latest Jobs</a><a href="#categories">Categories</a><a href="#states">States</a></div><div><h3>Resources</h3><a href="#resume">Resume Guide</a><a href="#interview">Interview Guide</a><a href="#salary">Salary Guide</a></div><div><h3>Company</h3><a href="#about">About</a><a href="#privacy">Privacy</a><a href="#terms">Terms</a></div></div></footer>
+    <footer className="footer" id="resources">
+      <div className="container footer-grid">
+        <div><a className="footer-brand" href="/"><span className="flag-mark small"><i/><b/><em/></span><strong>USA Job Market</strong></a><p>Find jobs across the United States by category, company, location and work type.</p></div>
+        <div><h3>Jobs</h3><a href="#jobs">Latest Jobs</a><a href="#categories">Job Categories</a><a href="#states">Jobs by State</a><a href="#companies">Companies</a></div>
+        <div><h3>Career Resources</h3><a href="#resume">Resume Guide</a><a href="#interview">Interview Guide</a><a href="#salary">Salary Guide</a><a href="#blog">Career Blog</a></div>
+        <div><h3>Company</h3><a href="#about">About Us</a><a href="#privacy">Privacy</a><a href="#terms">Terms</a><a href="#contact">Contact</a></div>
+      </div>
+      <div className="container footer-bottom"><span>© 2026 USA Job Market. USA jobs only.</span><span>Built for job seekers across America.</span></div>
+    </footer>
   </>;
 }
