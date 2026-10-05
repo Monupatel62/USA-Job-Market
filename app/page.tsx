@@ -55,7 +55,7 @@ export default function Home() {
           <span className="brand-copy"><strong><span>USA</span> Job Market</strong><small>Find Jobs Across the United States</small></span>
         </a>
         <nav className="nav" aria-label="Main navigation">
-          <a className="active" href="/">Home</a><a href="/jobs">Jobs</a><a href="#companies">Companies</a><a href="#categories">Categories</a><a href="#states">States <span className="chevron">⌄</span></a><a href="#resources">Resources</a><a href="#blog">Blog</a>
+          <a className="active" href="/">Home</a><a href="/jobs">Jobs</a><a href="/companies">Companies</a><a href="/categories">Categories</a><a href="/states">States <span className="chevron">⌄</span></a><a href="/faq">Resources</a><a href="/faq">FAQ</a>
         </nav>
         <div className="header-actions">
           <button className="icon-button heart" aria-label="Saved jobs">♡</button><button className="btn sign-in">Sign In</button><button className="btn register">Register</button>
@@ -74,7 +74,7 @@ export default function Home() {
         <div className="container hero-content">
           <h1>Find Your Dream Job <span>in the USA</span></h1>
           <h2>All Categories. All States. Real Opportunities.</h2>
-          <p>Explore 1000+ USA jobs from top companies. Full-time, part-time, remote, contract, internships and more.</p>
+          <p>Explore USA jobs from configured employer sources. Full-time, part-time, remote, contract, internships and more.</p>
           <form className="hero-search" onSubmit={e=>{e.preventDefault();document.getElementById("jobs")?.scrollIntoView({behavior:"smooth"});}}>
             <label className="search-input"><span>⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Job title, keyword or company" aria-label="Job title, keyword or company"/></label>
             <label className="search-input"><span>⌖</span><input value={location} onChange={e=>setLocation(e.target.value)} placeholder="City, State or Remote" aria-label="City, State or Remote"/></label>
@@ -122,19 +122,19 @@ export default function Home() {
       </section>
 
       <section className="section companies-preview" id="companies">
-        <div className="container"><div className="section-heading"><div><h2>Top Companies</h2><p>Discover employers and their latest USA opportunities.</p></div><a href="#companies">View All Companies →</a></div>
+        <div className="container"><div className="section-heading"><div><h2>Top Companies</h2><p>Discover employers and their latest USA opportunities.</p></div><a href="/companies">View All Companies →</a></div>
           <div className="company-grid">{["Google","Amazon","Microsoft","UnitedHealth Group","Tesla","Starbucks"].map((name,i)=><div className="company-card" key={name}><span className={"company-mini mini-"+i}>{name[0]}</span><div><strong>{name}</strong><small>USA opportunities</small></div><span>→</span></div>)}</div>
         </div>
       </section>
 
-      <section className="seo-band" id="states"><div className="container"><div><span className="eyebrow">USA-wide coverage</span><h2>Find jobs in every state.</h2><p>Search by state, city, remote work, category, company and career level.</p></div><a className="btn register" href="#jobs">Explore USA Jobs →</a></div></section>
+      <section className="seo-band" id="states"><div className="container"><div><span className="eyebrow">USA-wide coverage</span><h2>Find jobs in every state.</h2><p>Search by state, city, remote work, category, company and career level.</p></div><a className="btn register" href="/jobs">Explore USA Jobs →</a></div></section>
     </main>
 
     <footer className="footer" id="resources">
       <div className="container footer-grid">
         <div><a className="footer-brand" href="/"><span className="flag-mark small"><svg className="usa-flag" viewBox="0 0 190 100" role="img" aria-label="United States flag" focusable="false"><rect width="190" height="100" fill="#fff"/><path fill="#b22234" d="M0 0h190v7.69H0zm0 15.38h190v7.69H0zm0 15.38h190v7.69H0zm0 15.38h190v7.69H0zm0 15.38h190v7.69H0zm0 15.38h190v7.69H0z"/><rect width="76" height="53.85" fill="#3c3b6e"/><g fill="#fff"><circle key="s0" cx="4" cy="5" r="1.35"/><circle key="s1" cx="11.2" cy="5" r="1.35"/><circle key="s2" cx="18.4" cy="5" r="1.35"/><circle key="s3" cx="25.6" cy="5" r="1.35"/><circle key="s4" cx="32.8" cy="5" r="1.35"/><circle key="s5" cx="40" cy="5" r="1.35"/><circle key="s6" cx="47.2" cy="5" r="1.35"/><circle key="s7" cx="54.4" cy="5" r="1.35"/><circle key="s8" cx="61.6" cy="5" r="1.35"/><circle key="s9" cx="68.8" cy="5" r="1.35"/><circle key="s10" cx="7.6" cy="10.1" r="1.35"/><circle key="s11" cx="14.799999999999999" cy="10.1" r="1.35"/><circle key="s12" cx="22" cy="10.1" r="1.35"/><circle key="s13" cx="29.200000000000003" cy="10.1" r="1.35"/><circle key="s14" cx="36.4" cy="10.1" r="1.35"/><circle key="s15" cx="43.6" cy="10.1" r="1.35"/><circle key="s16" cx="50.800000000000004" cy="10.1" r="1.35"/><circle key="s17" cx="58" cy="10.1" r="1.35"/><circle key="s18" cx="65.2" cy="10.1" r="1.35"/><circle key="s19" cx="72.39999999999999" cy="10.1" r="1.35"/><circle key="s20" cx="4" cy="15.2" r="1.35"/><circle key="s21" cx="11.2" cy="15.2" r="1.35"/><circle key="s22" cx="18.4" cy="15.2" r="1.35"/><circle key="s23" cx="25.6" cy="15.2" r="1.35"/><circle key="s24" cx="32.8" cy="15.2" r="1.35"/><circle key="s25" cx="40" cy="15.2" r="1.35"/><circle key="s26" cx="47.2" cy="15.2" r="1.35"/><circle key="s27" cx="54.4" cy="15.2" r="1.35"/><circle key="s28" cx="61.6" cy="15.2" r="1.35"/><circle key="s29" cx="68.8" cy="15.2" r="1.35"/><circle key="s30" cx="7.6" cy="20.299999999999997" r="1.35"/><circle key="s31" cx="14.799999999999999" cy="20.299999999999997" r="1.35"/><circle key="s32" cx="22" cy="20.299999999999997" r="1.35"/><circle key="s33" cx="29.200000000000003" cy="20.299999999999997" r="1.35"/><circle key="s34" cx="36.4" cy="20.299999999999997" r="1.35"/><circle key="s35" cx="43.6" cy="20.299999999999997" r="1.35"/><circle key="s36" cx="50.800000000000004" cy="20.299999999999997" r="1.35"/><circle key="s37" cx="58" cy="20.299999999999997" r="1.35"/><circle key="s38" cx="65.2" cy="20.299999999999997" r="1.35"/><circle key="s39" cx="72.39999999999999" cy="20.299999999999997" r="1.35"/><circle key="s40" cx="4" cy="25.4" r="1.35"/><circle key="s41" cx="11.2" cy="25.4" r="1.35"/><circle key="s42" cx="18.4" cy="25.4" r="1.35"/><circle key="s43" cx="25.6" cy="25.4" r="1.35"/><circle key="s44" cx="32.8" cy="25.4" r="1.35"/><circle key="s45" cx="40" cy="25.4" r="1.35"/><circle key="s46" cx="47.2" cy="25.4" r="1.35"/><circle key="s47" cx="54.4" cy="25.4" r="1.35"/><circle key="s48" cx="61.6" cy="25.4" r="1.35"/><circle key="s49" cx="68.8" cy="25.4" r="1.35"/></g></svg></span><strong>USA Job Market</strong></a><p>Find jobs across the United States by category, company, location and work type.</p></div>
-        <div><h3>Jobs</h3><a href="#jobs">Latest Jobs</a><a href="#categories">Job Categories</a><a href="#states">Jobs by State</a><a href="#companies">Companies</a></div>
-        <div><h3>Career Resources</h3><a href="#resume">Resume Guide</a><a href="#interview">Interview Guide</a><a href="#salary">Salary Guide</a><a href="#blog">Career Blog</a></div>
+        <div><h3>Jobs</h3><a href="/jobs">Latest Jobs</a><a href="/categories">Job Categories</a><a href="/states">Jobs by State</a><a href="/companies">Companies</a></div>
+        <div><h3>Career Resources</h3><a href="/faq">Resume Guide</a><a href="/faq">Interview Guide</a><a href="/faq">Salary Guide</a><a href="/faq">Career FAQ</a></div>
         <div><h3>Company</h3><a href="#about">About Us</a><a href="#privacy">Privacy</a><a href="#terms">Terms</a><a href="#contact">Contact</a></div>
       </div>
       <div className="container footer-bottom"><span>© 2026 USA Job Market. USA jobs only.</span><span>Built for job seekers across America.</span></div>
