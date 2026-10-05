@@ -1,6 +1,7 @@
 import type {MetadataRoute} from "next";
 import {usaStates} from "../lib/states";
 import {usaCities} from "../lib/cities";
+import {sourceRegistry} from "../lib/sources";
 import {categories} from "../lib/categories";
 import {jobs} from "../lib/job-data";
 import {slugify} from "../lib/sources";
@@ -15,10 +16,12 @@ export default function sitemap():MetadataRoute.Sitemap{
   {url:base+"/categories",lastModified:now,changeFrequency:"weekly",priority:.85},
   {url:base+"/states",lastModified:now,changeFrequency:"weekly",priority:.85},
   {url:base+"/cities",lastModified:now,changeFrequency:"weekly",priority:.8},
+  {url:base+"/companies",lastModified:now,changeFrequency:"weekly",priority:.8},
   {url:base+"/faq",lastModified:now,changeFrequency:"monthly",priority:.6},
   ...categories.map(c=>({url:base+"/categories/"+slugify(c),lastModified:now,changeFrequency:"daily" as const,priority:.7})),
   ...usaStates.map(([slug])=>({url:base+"/states/"+slug,lastModified:now,changeFrequency:"daily" as const,priority:.7})),
   ...usaCities.map(([slug])=>({url:base+"/cities/"+slug,lastModified:now,changeFrequency:"daily" as const,priority:.65})),
+  ...sourceRegistry.map(s=>({url:base+"/companies/"+s.token,lastModified:now,changeFrequency:"daily" as const,priority:.65})),
   ...jobs.map(j=>({url:base+"/jobs/"+j.slug,lastModified:new Date(j.fetchedAt),changeFrequency:"daily" as const,priority:.6}))
  ];
 }
