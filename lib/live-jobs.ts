@@ -4,6 +4,7 @@ import type {Job} from "./job-types";
 
 export const revalidate=900;
 
+function inferExperience(text:string){const value=text.toLowerCase();if(/intern|internship|entry.?level|new grad|graduate/.test(value))return "Entry-level";if(/senior|sr\.?|staff|principal|lead/.test(value))return "Senior";if(/mid.?level|2\+|3\+|4\+|5\+/.test(value))return "Mid-level";return undefined;}
 function inferType(value:string,title:string):Job["type"]{
  const text=value+" "+title;
  if(/intern|internship|co-op/i.test(text))return "Internship";
@@ -32,7 +33,7 @@ async function greenhouseJobs():Promise<Job[]>{
   const data=await res.json() as {jobs?:any[]};
   return (data.jobs??[]).filter(item=>isUsLocation(normalizeText(item.location?.name))).map(item=>{
    const location=normalizeText(item.location?.name);
-   return {id:"greenhouse-"+source.token+"-"+item.id,slug:slugify(item.title+"-"+source.company+"-"+item.id),title:normalizeText(item.title),company:source.company,location,city:location.split(",")[0]??location,state:location.split(",")[1]?.trim()??"",category:inferCategory(item.title, location, normalizeText(item.content)),type:inferType("",item.title),remote:inferRemote(location,item.title),description:normalizeJobContent(item.content),source:"greenhouse",sourceName:source.company,sourceUrl:item.absolute_url,sourceJobId:String(item.id),postedAt:item.updated_at,fetchedAt:new Date().toISOString()} as Job;
+   return {id:"greenhouse-"+source.token+"-"+item.id,slug:slugify(item.title+"-"+source.company+"-"+item.id),title:normalizeText(item.title),company:source.company,location,city:location.split(",")[0]??location,state:location.split(",")[1]?.trim()??"",category:inferCategory(item.title, location, normalizeText(item.content)),type:inferType("",item.title),remote:inferRemote(location,item.title),experience:inferExperience(item.title+" "+normalizeText(item.content)),description:normalizeJobContent(item.content),source:"greenhouse",sourceName:source.company,sourceUrl:item.absolute_url,sourceJobId:String(item.id),postedAt:item.updated_at,fetchedAt:new Date().toISOString()} as Job;
   });
  }));
  return results.flatMap(r=>r.status==="fulfilled"?r.value:[]);
@@ -51,7 +52,7 @@ async function leverJobs():Promise<Job[]>{
    const location=String(locations.find((value:string)=>isUsLocation(value))??locations[0]??"USA");
    const parts=normalizeText(location).split(",");
    const title=normalizeText(item.text);
-   return {id:"lever-"+source.token+"-"+item.id,slug:slugify(title+"-"+source.company+"-"+item.id),title,company:source.company,location,city:parts[0]??location,state:parts[1]?.trim()??"",category:inferCategory(title, normalizeText(item.categories?.team), normalizeText(item.categories?.department), location, normalizeText(item.descriptionPlain||item.openingPlain)),type:inferType(normalizeText(item.categories?.commitment),title),remote:/remote/i.test(normalizeText(item.workplaceType))||inferRemote(location,title),salary:normalizeText(item.salaryDescriptionPlain),description:normalizeJobContent(item.descriptionPlain||item.openingPlain),source:"lever",sourceName:source.company,sourceUrl:item.hostedUrl||item.applyUrl,sourceJobId:String(item.id),postedAt:item.createdAt?new Date(item.createdAt).toISOString():new Date().toISOString(),fetchedAt:new Date().toISOString()} as Job;
+   return {id:"lever-"+source.token+"-"+item.id,slug:slugify(title+"-"+source.company+"-"+item.id),title,company:source.company,location,city:parts[0]??location,state:parts[1]?.trim()??"",category:inferCategory(title, normalizeText(item.categories?.team), normalizeText(item.categories?.department), location, normalizeText(item.descriptionPlain||item.openingPlain)),type:inferType(normalizeText(item.categories?.commitment),title),remote:/remote/i.test(normalizeText(item.workplaceType))||inferRemote(location,title),experience:inferExperience(title+" "+normalizeText(item.descriptionPlain||item.openingPlain)),salary:normalizeText(item.salaryDescriptionPlain),description:normalizeJobContent(item.descriptionPlain||item.openingPlain),source:"lever",sourceName:source.company,sourceUrl:item.hostedUrl||item.applyUrl,sourceJobId:String(item.id),postedAt:item.createdAt?new Date(item.createdAt).toISOString():new Date().toISOString(),fetchedAt:new Date().toISOString()} as Job;
   });
  }));
  return results.flatMap(r=>r.status==="fulfilled"?r.value:[]);
@@ -67,7 +68,7 @@ async function usaJobs():Promise<Job[]>{
  return (data.SearchResult?.SearchResultItems??[]).map((item:any)=>{
   const d=item.MatchedObjectDescriptor??{};
   const loc=d.PositionLocationDisplay??d.PositionLocation?.[0]?.LocationName??"";
-  return {id:"usajobs-"+(d.PositionID??item.MatchedObjectId),slug:slugify((d.PositionTitle??"USA Government Job")+"-"+(d.PositionID??item.MatchedObjectId)),title:normalizeText(d.PositionTitle),company:normalizeText(d.OrganizationName||d.DepartmentName||"U.S. Government"),location:normalizeText(loc),city:normalizeText(loc).split(",")[0]??"",state:normalizeText(loc).split(",")[1]?.trim()??"",category:"Government & Public Sector",type:inferType("", d.PositionTitle),remote:inferRemote(loc,d.PositionTitle),description:normalizeText(d.UserArea?.Details?.JobSummary||d.QualificationSummary||""),source:"usajobs",sourceName:"USAJOBS",sourceUrl:d.PositionURI,sourceJobId:String(d.PositionID??item.MatchedObjectId),postedAt:d.PublicationStartDate,fetchedAt:new Date().toISOString()} as Job;
+  return {id:"usajobs-"+(d.PositionID??item.MatchedObjectId),slug:slugify((d.PositionTitle??"USA Government Job")+"-"+(d.PositionID??item.MatchedObjectId)),title:normalizeText(d.PositionTitle),company:normalizeText(d.OrganizationName||d.DepartmentName||"U.S. Government"),location:normalizeText(loc),city:normalizeText(loc).split(",")[0]??"",state:normalizeText(loc).split(",")[1]?.trim()??"",category:"Government & Public Sector",type:inferType("", d.PositionTitle),remote:inferRemote(loc,d.PositionTitle),experience:inferExperience(d.PositionTitle+" "+normalizeText(d.QualificationSummary||"")),description:normalizeText(d.UserArea?.Details?.JobSummary||d.QualificationSummary||""),source:"usajobs",sourceName:"USAJOBS",sourceUrl:d.PositionURI,sourceJobId:String(d.PositionID??item.MatchedObjectId),postedAt:d.PublicationStartDate,fetchedAt:new Date().toISOString()} as Job;
  });
 }
 
