@@ -15,15 +15,13 @@ function inferType(value:string,title:string):Job["type"]{
 }
 
 function dedupeJobs(input:Job[]){
- const sourceMap=new Map<string,Job>();
- for(const job of input)sourceMap.set((job.source+"|"+job.sourceJobId).toLowerCase(),job);
- const listingMap=new Map<string,Job>();
- for(const job of sourceMap.values()){
-  const key=[job.company,job.title,job.location].map(normalizeText).join("|").toLowerCase();
-  const old=listingMap.get(key);
-  if(!old||new Date(job.fetchedAt).getTime()>new Date(old.fetchedAt).getTime())listingMap.set(key,job);
+ const map=new Map<string,Job>();
+ for(const job of input){
+  const key=(job.source+"|"+job.sourceJobId).toLowerCase();
+  const old=map.get(key);
+  if(!old||new Date(job.fetchedAt).getTime()>new Date(old.fetchedAt).getTime())map.set(key,{...job,isActive:true,lastSeenAt:job.fetchedAt});
  }
- return [...listingMap.values()].map(job=>({...job,isActive:true,lastSeenAt:job.fetchedAt}));
+ return [...map.values()];
 }
 
 async function greenhouseJobs():Promise<Job[]>{
@@ -74,6 +72,9 @@ async function usaJobs():Promise<Job[]>{
 
 export async function fetchLiveJobs():Promise<Job[]>{
  const [greenhouse,lever,government]=await Promise.allSettled([greenhouseJobs(),leverJobs(),usaJobs()]);
+ for(const [name,result] of [["Greenhouse",greenhouse],["Lever",lever],["USAJOBS",government]] as const){
+  if(result.status==="rejected")console.warn("[USA Job Market] source fetch failed:",name,result.reason);
+ }
  return dedupeJobs([
   ...(greenhouse.status==="fulfilled"?greenhouse.value:[]),
   ...(lever.status==="fulfilled"?lever.value:[]),
