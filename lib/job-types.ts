@@ -10,6 +10,7 @@ export type Job = {
   type: "Full-time" | "Part-time" | "Contract" | "Internship" | "Temporary";
   remote: boolean;
   salary?: string;
+  experience?: string;
   description: string;
   source: "greenhouse" | "lever" | "usajobs" | "employer";
   sourceName: string;
