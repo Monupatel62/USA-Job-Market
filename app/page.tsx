@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { categories as allCategories } from "../lib/categories";
 
 type Job = {
@@ -32,6 +33,7 @@ export default function Home() {
   const [category,setCategory] = useState("All categories");
   const [type,setType] = useState("All types");
   const [menuOpen,setMenuOpen] = useState(false);
+  const router = useRouter();
 
   const filtered = useMemo(() => jobs.filter(job => {
     const q = query.toLowerCase().trim();
@@ -105,8 +107,8 @@ export default function Home() {
         <div className="container">
           <div className="section-heading"><div><h2>Latest USA Jobs</h2><p>Fresh opportunities from top companies across the United States.</p></div><a href="/jobs">View All Jobs <span>→</span></a></div>
           <div className="job-grid">
-            {filtered.map(job=><article className="job-card" key={job.id}>
-              <div className="job-card-head"><div className={"company-mark "+job.markClass}>{job.mark}</div><strong>{job.company}</strong><span className="job-type">{job.type}</span><button className="save-job" aria-label={"Save "+job.title}>♡</button></div>
+            {filtered.map(job=><article className="job-card" key={job.id} role="link" tabIndex={0} onClick={()=>router.push("/jobs/"+job.title.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"")+"-"+job.company.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,""))} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();router.push("/jobs/"+job.title.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"")+"-"+job.company.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,""))}}}>
+              <div className="job-card-head"><div className={"company-mark "+job.markClass}>{job.mark}</div><strong>{job.company}</strong><span className="job-type">{job.type}</span><button className="save-job" aria-label={"Save "+job.title} onClick={e=>e.stopPropagation()}>♡</button></div>
               <h3>{job.title}</h3><p className="company-name">{job.company}</p><p className="job-location">⌖ {job.location}</p>
               <div className="job-card-bottom"><strong>{job.salary}</strong><small>{job.posted}</small></div>
             </article>)}
