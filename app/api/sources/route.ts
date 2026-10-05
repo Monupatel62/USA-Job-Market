@@ -1,9 +1,9 @@
-import {sourceRegistry,configuredLeverSources} from "../../../lib/sources";
+import {sourceRegistry} from "../../../lib/sources";
 
 export const dynamic="force-dynamic";
 
 export async function GET(){
- const sources=configuredLeverSources().length?sourceRegistry:sourceRegistry;
+ const sources=[...sourceRegistry];
  const checkedAt=new Date().toISOString();
  const health=await Promise.all(sources.map(async source=>{
   const url=source.provider==="greenhouse"
