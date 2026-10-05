@@ -8,6 +8,7 @@ import {slugify} from "../lib/sources";
 
 const base="https://usajobmarket.netlify.app";
 
+// Canonical XML sitemap for Google Search Console.
 export default function sitemap():MetadataRoute.Sitemap{
  const now=new Date();
  return [
