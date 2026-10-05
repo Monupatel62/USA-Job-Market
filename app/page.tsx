@@ -30,60 +30,8 @@ const trends = ["Remote Jobs","Software Engineer","Nurse","Teacher","Data Analys
 export default function Home() {
   const [query,setQuery] = useState("");
   const [location,setLocation] = useState("");
-
-
   const [menuOpen,setMenuOpen] = useState(false);
   const router = useRouter();
-
-  const selectCategory = (value:string) => {
-    router.push("/jobs?category="+encodeURIComponent(value));
-  };"use client";
-
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { categories as allCategories } from "../lib/categories";
-
-type Job = {
-  id: string; slug: string; title: string; company: string; location: string; category: string;
-  type: string; salary: string; posted: string; remote?: boolean; mark: string; markClass: string;
-};
-
-const jobs: Job[] = [
-  { id:"1", slug:"software-engineer-google-mountain-view", title:"Software Engineer", company:"Google", location:"Mountain View, CA", category:"IT & Software", type:"Full-time", salary:"$120K – $200K", posted:"2 days ago", mark:"G", markClass:"google" },
-  { id:"2", slug:"data-analyst-amazon-remote", title:"Data Analyst", company:"Amazon", location:"Remote, USA", category:"Data Science & Analytics", type:"Remote", salary:"$80K – $130K", posted:"1 day ago", remote:true, mark:"a", markClass:"amazon" },
-  { id:"3", slug:"product-manager-microsoft-redmond", title:"Product Manager", company:"Microsoft", location:"Redmond, WA", category:"Management", type:"Full-time", salary:"$150K – $220K", posted:"3 days ago", mark:"▦", markClass:"microsoft" },
-  { id:"4", slug:"registered-nurse-unitedhealth-group-houston", title:"Registered Nurse", company:"UnitedHealth Group", location:"Houston, TX", category:"Healthcare & Medical", type:"Full-time", salary:"$70K – $110K", posted:"2 days ago", mark:"U", markClass:"uhg" },
-  { id:"5", slug:"mechanical-engineer-tesla-austin", title:"Mechanical Engineer", company:"Tesla", location:"Austin, TX", category:"Engineering", type:"Full-time", salary:"$110K – $170K", posted:"1 day ago", mark:"T", markClass:"tesla" },
-  { id:"6", slug:"barista-starbucks-new-york", title:"Barista", company:"Starbucks", location:"New York, NY", category:"Restaurant & Food Service", type:"Part-time", salary:"$16 – $22/hour", posted:"3 days ago", mark:"★", markClass:"starbucks" },
-];
-
-const categoryVisuals: Record<string, [string,string]> = {
-  "IT & Software":["▰","blue"], "Healthcare & Medical":["♥","red"], "Finance & Accounting":["▥","gold"],
-  Engineering:["⚙","blue"], "Education & Teaching":["◆","blue"], Construction:["⌂","gold"],
-  "Customer Service":["◉","purple"], Sales:["▥","red"], "Remote Jobs":["⌂","green"],
-  "Government & Public Sector":["▥","slate"], "Hospitality & Hotels":["☕","gold"],
-};
-const featuredCategories = ["IT & Software","Healthcare & Medical","Finance & Accounting","Engineering","Education & Teaching","Construction","Customer Service","Sales","Remote Jobs","Government & Public Sector","Hospitality & Hotels"];
-const trends = ["Remote Jobs","Software Engineer","Nurse","Teacher","Data Analyst","Part-Time","Internship"];
-
-export default function Home() {
-  const [query,setQuery] = useState("");
-  const [location,setLocation] = useState("");
-  const [category,setCategory] = useState("All categories");
-  const [type,setType] = useState("All types");
-  const [menuOpen,setMenuOpen] = useState(false);
-  const router = useRouter();
-
-  const filtered = useMemo(() => jobs.filter(job => {
-    const q = query.toLowerCase().trim();
-    const matchesQuery = !q || [job.title,job.company,job.category,job.location].join(" ").toLowerCase().includes(q);
-    const matchesLocation = !location || job.location.toLowerCase().includes(location.toLowerCase());
-    const matchesCategory = category === "All categories" || job.category === category;
-    const matchesType = type === "All types" || job.type === type;
-    return matchesQuery && matchesLocation && matchesCategory && matchesType;
-  }), [query,location,category,type]);
-
-
 
   return <>
     <header className="site-header">
@@ -113,7 +61,7 @@ export default function Home() {
           <h1>Find Your Dream Job <span>in the USA</span></h1>
           <h2>All Categories. All States. Real Opportunities.</h2>
           <p>Explore USA jobs from configured employer sources. Full-time, part-time, remote, contract, internships and more.</p>
-          <form className="hero-search" onSubmit={e=>{e.preventDefault();const params=new URLSearchParams();if(query.trim())params.set("q",query.trim());if(location.trim())params.set("location",location.trim());router.push("/jobs?"+params.toString());}}>
+          <form className="hero-search" onSubmit={e=>{e.preventDefault();const p=new URLSearchParams();if(query.trim())p.set("q",query.trim());if(location.trim())p.set("location",location.trim());router.push("/jobs?"+p.toString());}}>
             <label className="search-input"><span>⌕</span><input name="q" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Job title, keyword or company" aria-label="Job title, keyword or company"/></label>
             <label className="search-input"><span>⌖</span><input name="location" value={location} onChange={e=>setLocation(e.target.value)} placeholder="City, State or Remote" aria-label="City, State or Remote"/></label>
             <button className="search-submit" type="submit">Search Jobs</button>
