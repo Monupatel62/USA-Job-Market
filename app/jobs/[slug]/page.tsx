@@ -24,7 +24,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
   const job = preview ?? live;
   if (!job) notFound();
 
-  const isLive = job.source !== "employer";\n
+  const isLive = job.source !== "employer";
   const related = source.filter(item => item.slug !== job.slug && (item.category === job.category || item.company === job.company || item.state === job.state)).slice(0, 6);
   const companyJobs = source.filter(item => item.slug !== job.slug && item.company === job.company).slice(0, 4);
   const applySteps = job.source === "usajobs"
