@@ -1,4 +1,4 @@
-import {sourceRegistry,configuredLeverSources,normalizeText,isUsLocation,inferRemote,slugify} from "./sources";
+import {sourceRegistry,configuredLeverSources,normalizeText,normalizeJobContent,isUsLocation,inferRemote,slugify} from "./sources";
 import {inferCategory} from "./job-taxonomy";
 import type {Job} from "./job-types";
 
@@ -32,7 +32,7 @@ async function greenhouseJobs():Promise<Job[]>{
   const data=await res.json() as {jobs?:any[]};
   return (data.jobs??[]).filter(item=>isUsLocation(normalizeText(item.location?.name))).map(item=>{
    const location=normalizeText(item.location?.name);
-   return {id:"greenhouse-"+source.token+"-"+item.id,slug:slugify(item.title+"-"+source.company+"-"+item.id),title:normalizeText(item.title),company:source.company,location,city:location.split(",")[0]??location,state:location.split(",")[1]?.trim()??"",category:inferCategory(item.title, location, normalizeText(item.content)),type:inferType("",item.title),remote:inferRemote(location,item.title),description:normalizeText(item.content),source:"greenhouse",sourceName:source.company,sourceUrl:item.absolute_url,sourceJobId:String(item.id),postedAt:item.updated_at,fetchedAt:new Date().toISOString()} as Job;
+   return {id:"greenhouse-"+source.token+"-"+item.id,slug:slugify(item.title+"-"+source.company+"-"+item.id),title:normalizeText(item.title),company:source.company,location,city:location.split(",")[0]??location,state:location.split(",")[1]?.trim()??"",category:inferCategory(item.title, location, normalizeText(item.content)),type:inferType("",item.title),remote:inferRemote(location,item.title),description:normalizeJobContent(item.content),source:"greenhouse",sourceName:source.company,sourceUrl:item.absolute_url,sourceJobId:String(item.id),postedAt:item.updated_at,fetchedAt:new Date().toISOString()} as Job;
   });
  }));
  return results.flatMap(r=>r.status==="fulfilled"?r.value:[]);
@@ -51,7 +51,7 @@ async function leverJobs():Promise<Job[]>{
    const location=String(locations.find((value:string)=>isUsLocation(value))??locations[0]??"USA");
    const parts=normalizeText(location).split(",");
    const title=normalizeText(item.text);
-   return {id:"lever-"+source.token+"-"+item.id,slug:slugify(title+"-"+source.company+"-"+item.id),title,company:source.company,location,city:parts[0]??location,state:parts[1]?.trim()??"",category:inferCategory(title, normalizeText(item.categories?.team), normalizeText(item.categories?.department), location, normalizeText(item.descriptionPlain||item.openingPlain)),type:inferType(normalizeText(item.categories?.commitment),title),remote:/remote/i.test(normalizeText(item.workplaceType))||inferRemote(location,title),salary:normalizeText(item.salaryDescriptionPlain),description:normalizeText(item.descriptionPlain||item.openingPlain),source:"lever",sourceName:source.company,sourceUrl:item.hostedUrl||item.applyUrl,sourceJobId:String(item.id),postedAt:item.createdAt?new Date(item.createdAt).toISOString():new Date().toISOString(),fetchedAt:new Date().toISOString()} as Job;
+   return {id:"lever-"+source.token+"-"+item.id,slug:slugify(title+"-"+source.company+"-"+item.id),title,company:source.company,location,city:parts[0]??location,state:parts[1]?.trim()??"",category:inferCategory(title, normalizeText(item.categories?.team), normalizeText(item.categories?.department), location, normalizeText(item.descriptionPlain||item.openingPlain)),type:inferType(normalizeText(item.categories?.commitment),title),remote:/remote/i.test(normalizeText(item.workplaceType))||inferRemote(location,title),salary:normalizeText(item.salaryDescriptionPlain),description:normalizeJobContent(item.descriptionPlain||item.openingPlain),source:"lever",sourceName:source.company,sourceUrl:item.hostedUrl||item.applyUrl,sourceJobId:String(item.id),postedAt:item.createdAt?new Date(item.createdAt).toISOString():new Date().toISOString(),fetchedAt:new Date().toISOString()} as Job;
   });
  }));
  return results.flatMap(r=>r.status==="fulfilled"?r.value:[]);
