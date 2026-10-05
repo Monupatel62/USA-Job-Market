@@ -20,10 +20,12 @@ function descriptionBlocks(description: string) { return description.split(/\n\s
 export default async function JobDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const preview = getJobBySlug(slug);
-  const live = preview ? undefined : (await fetchLiveJobs()).find(job => job.slug === slug);
+  const liveJobs = preview ? [] : await fetchLiveJobs();
+  const live = preview ? undefined : liveJobs.find(job => job.slug === slug);
   const job = preview ?? live;
   if (!job) notFound();
 
+  const source = preview ? jobs : liveJobs;
   const isLive = job.source !== "employer";
   const related = source.filter(item => item.slug !== job.slug && (item.category === job.category || item.company === job.company || item.state === job.state)).slice(0, 6);
   const companyJobs = source.filter(item => item.slug !== job.slug && item.company === job.company).slice(0, 4);
