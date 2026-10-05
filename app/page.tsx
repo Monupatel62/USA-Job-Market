@@ -1,21 +1,60 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { categories as allCategories } from "../lib/categories";
 
 type Job = {
-  id: string; title: string; company: string; location: string; category: string;
+  id: string; slug: string; title: string; company: string; location: string; category: string;
   type: string; salary: string; posted: string; remote?: boolean; mark: string; markClass: string;
 };
 
 const jobs: Job[] = [
-  { id:"1", title:"Software Engineer", company:"Google", location:"Mountain View, CA", category:"IT & Software", type:"Full-time", salary:"$120K – $200K", posted:"2 days ago", mark:"G", markClass:"google" },
-  { id:"2", title:"Data Analyst", company:"Amazon", location:"Remote, USA", category:"Data Science & Analytics", type:"Remote", salary:"$80K – $130K", posted:"1 day ago", remote:true, mark:"a", markClass:"amazon" },
-  { id:"3", title:"Product Manager", company:"Microsoft", location:"Redmond, WA", category:"Management", type:"Full-time", salary:"$150K – $220K", posted:"3 days ago", mark:"▦", markClass:"microsoft" },
-  { id:"4", title:"Registered Nurse", company:"UnitedHealth Group", location:"Houston, TX", category:"Healthcare & Medical", type:"Full-time", salary:"$70K – $110K", posted:"2 days ago", mark:"U", markClass:"uhg" },
-  { id:"5", title:"Mechanical Engineer", company:"Tesla", location:"Austin, TX", category:"Engineering", type:"Full-time", salary:"$110K – $170K", posted:"1 day ago", mark:"T", markClass:"tesla" },
-  { id:"6", title:"Barista", company:"Starbucks", location:"New York, NY", category:"Restaurant & Food Service", type:"Part-time", salary:"$16 – $22/hour", posted:"3 days ago", mark:"★", markClass:"starbucks" },
+  { id:"1", slug:"software-engineer-google-mountain-view", title:"Software Engineer", company:"Google", location:"Mountain View, CA", category:"IT & Software", type:"Full-time", salary:"$120K – $200K", posted:"2 days ago", mark:"G", markClass:"google" },
+  { id:"2", slug:"data-analyst-amazon-remote", title:"Data Analyst", company:"Amazon", location:"Remote, USA", category:"Data Science & Analytics", type:"Remote", salary:"$80K – $130K", posted:"1 day ago", remote:true, mark:"a", markClass:"amazon" },
+  { id:"3", slug:"product-manager-microsoft-redmond", title:"Product Manager", company:"Microsoft", location:"Redmond, WA", category:"Management", type:"Full-time", salary:"$150K – $220K", posted:"3 days ago", mark:"▦", markClass:"microsoft" },
+  { id:"4", slug:"registered-nurse-unitedhealth-group-houston", title:"Registered Nurse", company:"UnitedHealth Group", location:"Houston, TX", category:"Healthcare & Medical", type:"Full-time", salary:"$70K – $110K", posted:"2 days ago", mark:"U", markClass:"uhg" },
+  { id:"5", slug:"mechanical-engineer-tesla-austin", title:"Mechanical Engineer", company:"Tesla", location:"Austin, TX", category:"Engineering", type:"Full-time", salary:"$110K – $170K", posted:"1 day ago", mark:"T", markClass:"tesla" },
+  { id:"6", slug:"barista-starbucks-new-york", title:"Barista", company:"Starbucks", location:"New York, NY", category:"Restaurant & Food Service", type:"Part-time", salary:"$16 – $22/hour", posted:"3 days ago", mark:"★", markClass:"starbucks" },
+];
+
+const categoryVisuals: Record<string, [string,string]> = {
+  "IT & Software":["▰","blue"], "Healthcare & Medical":["♥","red"], "Finance & Accounting":["▥","gold"],
+  Engineering:["⚙","blue"], "Education & Teaching":["◆","blue"], Construction:["⌂","gold"],
+  "Customer Service":["◉","purple"], Sales:["▥","red"], "Remote Jobs":["⌂","green"],
+  "Government & Public Sector":["▥","slate"], "Hospitality & Hotels":["☕","gold"],
+};
+const featuredCategories = ["IT & Software","Healthcare & Medical","Finance & Accounting","Engineering","Education & Teaching","Construction","Customer Service","Sales","Remote Jobs","Government & Public Sector","Hospitality & Hotels"];
+const trends = ["Remote Jobs","Software Engineer","Nurse","Teacher","Data Analyst","Part-Time","Internship"];
+
+export default function Home() {
+  const [query,setQuery] = useState("");
+  const [location,setLocation] = useState("");
+
+
+  const [menuOpen,setMenuOpen] = useState(false);
+  const router = useRouter();
+
+  const selectCategory = (value:string) => {
+    router.push("/jobs?category="+encodeURIComponent(value));
+  };"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { categories as allCategories } from "../lib/categories";
+
+type Job = {
+  id: string; slug: string; title: string; company: string; location: string; category: string;
+  type: string; salary: string; posted: string; remote?: boolean; mark: string; markClass: string;
+};
+
+const jobs: Job[] = [
+  { id:"1", slug:"software-engineer-google-mountain-view", title:"Software Engineer", company:"Google", location:"Mountain View, CA", category:"IT & Software", type:"Full-time", salary:"$120K – $200K", posted:"2 days ago", mark:"G", markClass:"google" },
+  { id:"2", slug:"data-analyst-amazon-remote", title:"Data Analyst", company:"Amazon", location:"Remote, USA", category:"Data Science & Analytics", type:"Remote", salary:"$80K – $130K", posted:"1 day ago", remote:true, mark:"a", markClass:"amazon" },
+  { id:"3", slug:"product-manager-microsoft-redmond", title:"Product Manager", company:"Microsoft", location:"Redmond, WA", category:"Management", type:"Full-time", salary:"$150K – $220K", posted:"3 days ago", mark:"▦", markClass:"microsoft" },
+  { id:"4", slug:"registered-nurse-unitedhealth-group-houston", title:"Registered Nurse", company:"UnitedHealth Group", location:"Houston, TX", category:"Healthcare & Medical", type:"Full-time", salary:"$70K – $110K", posted:"2 days ago", mark:"U", markClass:"uhg" },
+  { id:"5", slug:"mechanical-engineer-tesla-austin", title:"Mechanical Engineer", company:"Tesla", location:"Austin, TX", category:"Engineering", type:"Full-time", salary:"$110K – $170K", posted:"1 day ago", mark:"T", markClass:"tesla" },
+  { id:"6", slug:"barista-starbucks-new-york", title:"Barista", company:"Starbucks", location:"New York, NY", category:"Restaurant & Food Service", type:"Part-time", salary:"$16 – $22/hour", posted:"3 days ago", mark:"★", markClass:"starbucks" },
 ];
 
 const categoryVisuals: Record<string, [string,string]> = {
@@ -44,10 +83,7 @@ export default function Home() {
     return matchesQuery && matchesLocation && matchesCategory && matchesType;
   }), [query,location,category,type]);
 
-  const selectCategory = (value:string) => {
-    setCategory(value);
-    document.getElementById("jobs")?.scrollIntoView({behavior:"smooth"});
-  };
+
 
   return <>
     <header className="site-header">
@@ -65,7 +101,7 @@ export default function Home() {
         </div>
       </div>
       {menuOpen && <div className="mobile-nav">
-        {["Home","Jobs","Companies","Categories","States","Resources","Blog"].map(item => <a key={item} href={item==="Home" ? "/" : "#"+item.toLowerCase()} onClick={()=>setMenuOpen(false)}>{item}</a>)}
+        {[["Home","/"],["Jobs","/jobs"],["Companies","/companies"],["Categories","/categories"],["States","/states"],["Resources","/faq"],["Blog","/faq"]].map(([item,href]) => <a key={item} href={href} onClick={()=>setMenuOpen(false)}>{item}</a>)}
         <div className="mobile-nav-actions"><button className="btn sign-in">Sign In</button><button className="btn register">Register</button></div>
       </div>}
     </header>
@@ -77,12 +113,12 @@ export default function Home() {
           <h1>Find Your Dream Job <span>in the USA</span></h1>
           <h2>All Categories. All States. Real Opportunities.</h2>
           <p>Explore USA jobs from configured employer sources. Full-time, part-time, remote, contract, internships and more.</p>
-          <form className="hero-search" onSubmit={e=>{e.preventDefault();document.getElementById("jobs")?.scrollIntoView({behavior:"smooth"});}}>
-            <label className="search-input"><span>⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Job title, keyword or company" aria-label="Job title, keyword or company"/></label>
-            <label className="search-input"><span>⌖</span><input value={location} onChange={e=>setLocation(e.target.value)} placeholder="City, State or Remote" aria-label="City, State or Remote"/></label>
+          <form className="hero-search" onSubmit={e=>{e.preventDefault();const params=new URLSearchParams();if(query.trim())params.set("q",query.trim());if(location.trim())params.set("location",location.trim());router.push("/jobs?"+params.toString());}}>
+            <label className="search-input"><span>⌕</span><input name="q" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Job title, keyword or company" aria-label="Job title, keyword or company"/></label>
+            <label className="search-input"><span>⌖</span><input name="location" value={location} onChange={e=>setLocation(e.target.value)} placeholder="City, State or Remote" aria-label="City, State or Remote"/></label>
             <button className="search-submit" type="submit">Search Jobs</button>
           </form>
-          <div className="trending"><strong>Trending:</strong>{trends.map(item=><button key={item} onClick={()=>setQuery(item)}>{item}</button>)}</div>
+          <div className="trending"><strong>Trending:</strong>{trends.map(item=><button key={item} onClick={()=>router.push("/jobs?q="+encodeURIComponent(item))}>{item}</button>)}</div>
         </div>
       </section>
 
@@ -92,7 +128,7 @@ export default function Home() {
             const [icon,tone]=categoryVisuals[name]??["●","blue"];
             return <button key={name} className="category-tile" onClick={()=>selectCategory(name)}><span className={"category-icon "+tone}>{icon}</span><span>{name}</span></button>;
           })}
-          <button className="category-tile" onClick={()=>document.getElementById("categories-all")?.scrollIntoView({behavior:"smooth"})}><span className="category-icon purple">⊞</span><span>More<br/>Categories</span></button>
+          <button className="category-tile" onClick={()=>router.push("/categories")}><span className="category-icon purple">⊞</span><span>More<br/>Categories</span></button>
         </div>
       </section>
 
@@ -107,7 +143,7 @@ export default function Home() {
         <div className="container">
           <div className="section-heading"><div><h2>Latest USA Jobs</h2><p>Fresh opportunities from top companies across the United States.</p></div><a href="/jobs">View All Jobs <span>→</span></a></div>
           <div className="job-grid">
-            {filtered.map(job=><article className="job-card" key={job.id} role="link" tabIndex={0} onClick={()=>router.push("/jobs/"+job.title.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"")+"-"+job.company.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,""))} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();router.push("/jobs/"+job.title.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"")+"-"+job.company.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,""))}}}>
+            {filtered.map(job=><article className="job-card" key={job.id} role="link" tabIndex={0} onClick={()=>router.push("/jobs/"+job.slug)} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();router.push("/jobs/"+job.slug)}}}>
               <div className="job-card-head"><div className={"company-mark "+job.markClass}>{job.mark}</div><strong>{job.company}</strong><span className="job-type">{job.type}</span><button className="save-job" aria-label={"Save "+job.title} onClick={e=>e.stopPropagation()}>♡</button></div>
               <h3>{job.title}</h3><p className="company-name">{job.company}</p><p className="job-location">⌖ {job.location}</p>
               <div className="job-card-bottom"><strong>{job.salary}</strong><small>{job.posted}</small></div>
