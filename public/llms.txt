@@ -1,0 +1,33 @@
+# USA Job Market
+
+USA Job Market is a USA-only job discovery website.
+
+## Scope
+- Jobs in the United States only
+- All 50 states
+- Major career categories
+- Full-time, part-time, remote, contract, internship, entry-level and government opportunities when available
+
+## Primary pages
+- https://usajobmarket.netlify.app/
+- https://usajobmarket.netlify.app/jobs
+- https://usajobmarket.netlify.app/categories
+- https://usajobmarket.netlify.app/states
+- https://usajobmarket.netlify.app/faq
+
+## Data policy
+Live employer-source listings are preferred. Each live listing retains its source information and official application URL. Preview listings are explicitly labeled and are not represented as live openings.
+
+## User intent
+Useful queries include:
+- jobs in the USA
+- jobs by US state
+- remote jobs in USA
+- software engineering jobs USA
+- healthcare jobs USA
+- government jobs USA
+- entry level jobs USA
+- internships USA
+
+## Trust
+USA Job Market does not submit applications on behalf of job seekers. Applicants should verify the opening and apply through the employer or official source.
