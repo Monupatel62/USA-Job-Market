@@ -80,8 +80,9 @@ export function inferRemote(location: string, title = "") {
 
 export function isUsLocation(location: string) {
   const value = normalizeText(location);
-  const hasUsMarker = /united states|\busa\b|\bu\.s\.a?\.?\b/i.test(value);
-  const hasState = /(^|,|\s)(AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|DC)(\s|,|$)/i.test(value);
-  const remoteOnly = /^(remote|remote only|work from home|wfh)$/i.test(value);
-  return hasUsMarker || hasState || (!remoteOnly && /remote/i.test(value) && hasUsMarker);
+  const hasUsMarker = /united states|\busa\b|\bu\.s\.a?\.?\b|\bunited states of america\b/i.test(value);
+  const stateNames = /\b(alabama|alaska|arizona|arkansas|california|colorado|connecticut|delaware|florida|georgia|hawaii|idaho|illinois|indiana|iowa|kansas|kentucky|louisiana|maine|maryland|massachusetts|michigan|minnesota|mississippi|missouri|montana|nebraska|nevada|new hampshire|new jersey|new mexico|new york|north carolina|north dakota|ohio|oklahoma|oregon|pennsylvania|rhode island|south carolina|south dakota|tennessee|texas|utah|vermont|virginia|washington|west virginia|wisconsin|wyoming|district of columbia)\b/i.test(value);
+  const stateCodes = /(^|[\s,\-])(AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|DC)(?=[\s,\-]|$)/i.test(value);
+  const remoteUs = /remote.*(united states|\busa\b|\bu\.s\.a?\.?\b)|(?:united states|\busa\b|\bu\.s\.a?\.?\b).*remote/i.test(value);
+  return hasUsMarker || stateNames || stateCodes || remoteUs;
 }
